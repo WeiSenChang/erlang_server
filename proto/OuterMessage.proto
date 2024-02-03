@@ -1,0 +1,85 @@
+syntax = "proto3";
+package Fantasy.Network.Message;
+
+/// 账号登陆
+message H_C2A_LoginRequest // IRequest,H_A2C_LoginResponse
+{
+    string UserName = 1; // 用户名
+    string Password = 2; // 密码
+}
+/// 账号注册
+message H_C2A_RegistrationRequest // IRequest,H_A2C_RegistrationResponse
+{
+    string UserName = 1;    // 用户名
+    string Password = 2;    // 账号
+    string Email = 3;       // 邮箱
+}
+message H_A2C_RegistrationResponse // IResponse
+{
+
+}
+message H_A2C_LoginResponse // IResponse
+{
+    string Address = 1; // Gate的IP地址
+    string Token = 2;   // Gate登陆令牌
+}
+/// 登陆Gate服务器
+message H_C2G_LoginRequest // IRequest,H_G2C_LoginResponse
+{
+    string Token = 1;       //Gate登陆令牌
+}
+message H_G2C_LoginResponse // IResponse
+{
+    RoleInfo RoleInfo = 1;
+}
+/// 重复登陆
+message H_G2C_RepeatLogin // IMessage
+{
+
+}
+/// 开始一个新的对局
+message H_C2G_PlayGameRequest // IRequest,H_G2C_PlayGameResponse
+{
+    int32 Level = 1;
+}
+message H_G2C_PlayGameResponse // IResponse
+{
+
+}
+
+/// 角色信息
+message RoleInfo
+{
+    int64 AccountId = 1;    //账号id
+    int32 Level = 2;        // 关卡id
+    int32 MaxLevel = 3;     // 最大关卡id
+}
+
+
+/// AAAAA
+message ProtoLogin_ReqLogin // IRequest, ProtoLogin_ResLogin
+{
+    uint64 player_id = 1;
+}
+
+message ProtoLogin_ResLogin // IResponse
+{
+    bool login_state = 1;
+}
+
+message ProtoLogin_ReqTest // IRequest, ProtoLogin_ResTest
+{
+}
+
+message ProtoLogin_ResTest // IResponse
+{
+    repeated ProtoOnline online_players = 1;
+    int32 test1 = 2;
+    bool test2 = 3;
+}
+
+message ProtoOnline
+{
+    int64 player_id = 1; // 玩家id
+    bool is_online = 2;  // 1/true 在线 0/false离线
+}
