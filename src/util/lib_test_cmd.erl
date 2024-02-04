@@ -7,7 +7,7 @@
 
 %% API
 -export([role_gm/1, role_gm/2, role_gm/3, role_gm/4, role_gm/5]).
--export([rand_show/0, insert_item/3, test_tcp/1]).
+-export([rand_show/0]).
 
 role_gm(Gm) ->
     role_gm(Gm, 0).
@@ -25,7 +25,9 @@ role_gm("test_time", Secs = [_ | _], _Par2, _Par3, _Par4) ->
                 ToDataTime = {{lib_types:to_integer(Y), lib_types:to_integer(Mon), lib_types:to_integer(D)},
                     {lib_types:to_integer(H), lib_types:to_integer(Min), lib_types:to_integer(S)}},
                 ToTick = lib_time:to_unix_time(ToDataTime),
-                ToTick - NowTick;
+                Hour = config:server_hour(),
+                Minute = config:server_minute(),
+                ToTick - NowTick - (Hour * lib_time:hour_second() + Minute * lib_time:minute_second());
             _ ->
                 0
         end,
@@ -46,16 +48,6 @@ role_gm("create", Num, _, _Par3, _Par4) ->
     lib_role_manage:role_create(Names),
     EndTick = lib_time:unix_time(),
     ?INFO("create role end, use time ~w s", [EndTick - StarTick]);
-role_gm("change_name", _Par1, _Par2, _Par3, _Par4) ->
-    StarTick = lib_time:unix_time(),
-    Roles = lib_db:load_all(?DB_ROLE),
-    {NewRoles, Changes} = change_name(Roles),
-    case lib_role_manage:role_change_name(Changes) of
-        success -> do_change_name(NewRoles);
-        _ -> skip
-    end,
-    EndTick = lib_time:unix_time(),
-    ?DEBUG("change name end, use time ~w s", [EndTick - StarTick]);
 role_gm("all_role_login", _Par1, _Par2, _Par3, _Par4) ->
     StarTick = lib_time:unix_time(),
     OffLineMap = lib_cache:get_offline_role_map(),
@@ -93,24 +85,6 @@ create(Value, Num, Count, Names) ->
             create(Value, Num, Count + 1, [Name | Names])
     end.
 
-change_name(Roles) ->
-    change_name(Roles, [], []).
-change_name([], Roles, Changes) ->
-    {Roles, Changes};
-change_name([Role | Tail], Roles, Changes) ->
-    #db_role{role_id = RoleId, name = OldName} = Role,
-    Name = "test" ++ lib_types:to_list(RoleId),
-    NewRole = Role#db_role{name = Name},
-    change_name(Tail, [NewRole |Roles], [{RoleId, OldName, Name} | Changes]).
-
-do_change_name([]) ->
-    ok;
-do_change_name([Role | Tail]) ->
-    lib_role:set_data(Role),
-    RoleShow = lib_role:gen_role_show(Role),
-    lib_role_manage:set_data(RoleShow),
-    do_change_name(Tail).
-
 all_role_logout([]) ->
     ok;
 all_role_logout([{RoleId, _} | Tail]) ->
@@ -123,20 +97,3 @@ rand_show() ->
     RoleId = rand:uniform(Max),
     ?INFO("~w", [RoleId]),
     lib_role_manage:get_data(RoleId).
-
-insert_item(RoleId, ItemId, Amount) ->
-    #db_role_pack{role_id = RoleId, package_map = PackageMap} = RolePack = lib_db:get(?DB_ROLE_PACK, RoleId),
-    Type = get_type(ItemId),
-    #r_package{item_map = ItemMap} = Package = maps:get(Type, PackageMap, #r_package{type = Type}),
-    Item = maps:get(ItemId, ItemMap, #r_item{item_id = ItemId}),
-    NewItem = Item#r_item{amount = Amount + Item#r_item.amount},
-    NewItemMap = maps:put(ItemId, NewItem, ItemMap),
-    NewPackage = Package#r_package{item_map = NewItemMap},
-    NewPackageMap = maps:put(Type, NewPackage, PackageMap),
-    NewRolePack = RolePack#db_role_pack{package_map = NewPackageMap},
-    lib_db:set(?DB_ROLE_PACK, RoleId, NewRolePack).
-
-get_type(ItemId) -> ItemId div 1000 + 1.
-
-test_tcp(RoleId) ->
-    gen_server:cast(role_server:get_pid(RoleId), test_tcp).

@@ -23,7 +23,6 @@ listen() ->
     loop_listen().
 
 loop_listen() ->
-    gen_tcp_socket:listen(),
     receive
         _Msg -> 
 	    ?INFO("~w", [_Msg]),
