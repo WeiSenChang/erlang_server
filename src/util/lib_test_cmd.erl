@@ -48,27 +48,6 @@ role_gm("create", Num, _, _Par3, _Par4) ->
     lib_role_manage:role_create(Names),
     EndTick = lib_time:unix_time(),
     ?INFO("create role end, use time ~w s", [EndTick - StarTick]);
-role_gm("all_role_login", _Par1, _Par2, _Par3, _Par4) ->
-    StarTick = lib_time:unix_time(),
-    OffLineMap = lib_cache:get_offline_role_map(),
-    RoleIds = maps:keys(OffLineMap),
-    LoginIds = lists:sublist(RoleIds, 100000),
-    lists:foreach(
-        fun(LoginId) ->
-            PName = role_server:get_p_name(LoginId),
-            server_sup:start_child(PName, role_server, transient, [LoginId])
-        end, LoginIds),
-    EndTick = lib_time:unix_time(),
-    ?INFO("role login end, use time ~w s", [EndTick - StarTick]);
-role_gm("all_role_logout", _Par1, _Par2, _Par3, _Par4) ->
-    StarTick = lib_time:unix_time(),
-    OnLineMap = lib_cache:get_online_role_map(),
-    ?DEBUG("~w", [map_size(OnLineMap)]),
-    all_role_logout(maps:to_list(OnLineMap)),
-    EndTick = lib_time:unix_time(),
-    ?DEBUG("role logout end, use time ~w s", [EndTick - StarTick]);
-
-
 role_gm(Gm, _Par1, _Par2, _Par3, _Par4) ->
     ?DEBUG("no role gm: ~ts", [Gm]).
 
