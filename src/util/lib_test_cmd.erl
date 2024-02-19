@@ -64,12 +64,6 @@ create(Value, Num, Count, Names) ->
             create(Value, Num, Count + 1, [Name | Names])
     end.
 
-all_role_logout([]) ->
-    ok;
-all_role_logout([{RoleId, _} | Tail]) ->
-    lib_login:logout(RoleId),
-    all_role_logout(Tail).
-
 rand_show() ->
     Max = map_size(lib_cache:get_role_name_map()),
     ?INFO("~w", [Max]),

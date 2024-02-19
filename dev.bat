@@ -8,7 +8,7 @@ goto wait_input
 :wait_input
     chcp 936
     echo =================
-    echo 生成记录   record
+    echo "生成记录"   record
     echo 编译文件   make
     echo 启动服务   start
     echo 停止服务   stop
