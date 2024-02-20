@@ -65,7 +65,7 @@ create(Value, Num, Count, Names) ->
     end.
 
 rand_show() ->
-    Max = map_size(lib_cache:get_role_name_map()),
+    Max = erlang:map_size(lib_cache:get_role_name_map()),
     ?INFO("~w", [Max]),
     RoleId = rand:uniform(Max),
     ?INFO("~w", [RoleId]),

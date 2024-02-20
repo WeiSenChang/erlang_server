@@ -44,7 +44,7 @@ start_as_game([Server | Tail]) ->
 
 wait_start_end(Count) ->
     Starteds = get_starteds(Count),
-    case Starteds >= length(?SERVERS) of
+    case Starteds >= erlang:length(?SERVERS) of
         true ->
             lib_cache:set_server_state(?SERVER, ?SERVER_STARTED);
         false ->
