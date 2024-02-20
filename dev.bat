@@ -6,28 +6,27 @@ set node=weisenchang@192.168.0.199
 goto wait_input
 
 :wait_input
-    chcp 936
-    echo =================
-    echo "生成记录"   record
-    echo 编译文件   make
-    echo 启动服务   start
-    echo 停止服务   stop
-    echo 更新代码   u
-    echo 连接服务   attach
-    echo 退出脚本   quit
-    echo 更新配置   config
-    echo 生成协议   proto
-    echo =================
-    set /p var=请输入指令:
-    if "%var%" == "record" goto record
-    if "%var%" == "make" goto make
-    if "%var%" == "start" goto start
-    if "%var%" == "stop" goto stop
-    if "%var%" == "u" goto u
-    if "%var%" == "quit" goto quit
-    if "%var%" == "attach" goto attach
-    if "%var%" == "config" goto config
-    if "%var%" == "proto" goto proto
+    echo ====================
+    echo gen record:   record
+    echo make file     make
+    echo start app:    start
+    echo stop app:     stop
+    echo hotup code:   u
+    echo link shell:   attach
+    echo quit escript: quit
+    echo hotup config: config
+    echo gen proto:    proto
+    echo ====================
+    set /p var=input:
+    if %var% == record goto record
+    if %var% == make goto make
+    if %var% == start goto start
+    if %var% == stop goto stop
+    if %var% == u goto u
+    if %var% == quit goto quit
+    if %var% == attach goto attach
+    if %var% == config goto config
+    if %var% == proto goto proto
     goto wait_input
 
 :record

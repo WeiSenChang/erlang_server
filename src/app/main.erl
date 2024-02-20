@@ -11,11 +11,11 @@
 start() ->
     config:reload(),
     application:start(server),
-    io:format("game start~n").
+    io:format("game server start~n").
 
 
 stop() ->
     lib_server:stop(),
     application:stop(server),
-    io:format("game stop~n"),
+    io:format("game server stop~n"),
     init:stop().
